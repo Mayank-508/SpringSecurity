@@ -21,7 +21,7 @@ class DemoApplicationTests {
 	void testJwt()
 	{
 
-		User user=new User(4L, "mayank@gmail.com","1234");
+		User user=new User(4L,"mayank", "mayank@gmail.com","1234");
 		String token= jwtService.generateToken(user);
 
 		System.out.println("this is the Jwt token ->>>>>  "+token);
