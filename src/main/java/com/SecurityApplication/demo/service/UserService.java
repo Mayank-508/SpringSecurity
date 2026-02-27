@@ -50,4 +50,9 @@ public class UserService implements UserDetailsService {
     }
 
 
+    public User getUserByUserId(Long userId) {
+        User user= userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User doesnt exist with userId "+userId));
+        return user;
+
+    }
 }
