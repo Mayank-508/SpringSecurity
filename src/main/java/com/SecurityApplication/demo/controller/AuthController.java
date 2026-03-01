@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class AuthController {
     private final UserService userService;
     private final AuthService authService;
 
+    @Value("deploy.env")
+    private String deployEnv;
+
     @PostMapping("/signUp")
     public ResponseEntity<UserDto> signUp(@RequestBody SignUpDto signUpDto)
     {
@@ -41,13 +45,12 @@ public class AuthController {
     {
        LoginResponseDTO loginResponseDTO= authService.login(loginDto);
 
-        Cookie cookie= new Cookie("token", loginResponseDTO.getRefreshToken());
+        Cookie cookie= new Cookie("refreshToken", loginResponseDTO.getRefreshToken());
         cookie.setHttpOnly(true);
+        cookie.setSecure("production".equals(deployEnv));
         response.addCookie(cookie);
 
-       return ResponseEntity.ok()
-               .header(HttpHeaders.SET_COOKIE)
-               .body(loginResponseDTO);
+       return ResponseEntity.ok(loginResponseDTO);
     }
 
     @PostMapping("/refresh")
