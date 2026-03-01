@@ -2,8 +2,6 @@ package com.SecurityApplication.demo;
 
 import com.SecurityApplication.demo.entity.User;
 import com.SecurityApplication.demo.service.JwtService;
-import com.SecurityApplication.demo.service.UserService;
-import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +20,7 @@ class DemoApplicationTests {
 	{
 
 		User user=new User(4L,"mayank", "mayank@gmail.com","1234");
-		String token= jwtService.generateToken(user);
+		String token= jwtService.generateAccessToken(user);
 
 		System.out.println("this is the Jwt token ->>>>>  "+token);
 

@@ -1,6 +1,7 @@
 package com.SecurityApplication.demo.controller;
 
 import com.SecurityApplication.demo.dto.LoginDto;
+import com.SecurityApplication.demo.dto.LoginResponseDTO;
 import com.SecurityApplication.demo.dto.SignUpDto;
 import com.SecurityApplication.demo.dto.UserDto;
 import com.SecurityApplication.demo.service.AuthService;
@@ -13,10 +14,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,16 +37,29 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto, HttpServletResponse response)
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDto loginDto, HttpServletResponse response)
     {
-       String token= authService.login(loginDto);
+       LoginResponseDTO loginResponseDTO= authService.login(loginDto);
 
-        Cookie cookie= new Cookie("token", token);
+        Cookie cookie= new Cookie("token", loginResponseDTO.getRefreshToken());
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
+
        return ResponseEntity.ok()
                .header(HttpHeaders.SET_COOKIE)
-               .body(token);
+               .body(loginResponseDTO);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponseDTO> refresh( HttpServletRequest request)
+    {
+        String refreshToken = Arrays.stream(request.getCookies()).
+                filter(cookie -> "refreshToken".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(()->new AuthenticationServiceException("Refresh token not found inside the cookies"));
+        LoginResponseDTO loginResponseDTO =authService.refreshToken(refreshToken);
+        return ResponseEntity.ok(loginResponseDTO);
     }
 
 
