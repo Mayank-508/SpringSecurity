@@ -1,17 +1,19 @@
 spring:
+  config:
+    import: optional:application-secret.properties
   security:
     oauth2:
       client:
         registration:
           google:
-            client-secret:
-            client-id:
-          github:
-            client-id:
-            client-secret:
-          facebook:
-            client-id:
-            client-secret:
+            client-secret: ${google.client-secret}
+            client-id: ${google.client-id}
+#          github:
+#            client-id:
+#            client-secret:
+#          facebook:
+#            client-id:
+#            client-secret:
 
 
 
