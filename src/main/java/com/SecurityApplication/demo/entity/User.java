@@ -1,7 +1,9 @@
 package com.SecurityApplication.demo.entity;
 
 
+import com.SecurityApplication.demo.entity.enums.Permissions;
 import com.SecurityApplication.demo.entity.enums.Role;
+import com.SecurityApplication.demo.utils.PermissionMapping;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.sql.results.graph.Fetch;
@@ -11,9 +13,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @Entity
 @Setter
@@ -40,16 +44,21 @@ public class User implements UserDetails {
 
     private String password;
 
-
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        return roles.stream()
-                .map(role->
-                        new SimpleGrantedAuthority("ROLE_"+ role.name()))
-                .collect(Collectors.toSet());
+        Set<SimpleGrantedAuthority> authorities= new HashSet<>();
+        roles.forEach(role -> {
+                    Set<SimpleGrantedAuthority> permissions= PermissionMapping.getAuthoritiesForRole(role);
+                    authorities.addAll(permissions);
+                    authorities.add(new SimpleGrantedAuthority("ROLE_"+role.name()));
+
+                }); ;
+
+
+        return authorities;
+
+
     }
 
     @Override

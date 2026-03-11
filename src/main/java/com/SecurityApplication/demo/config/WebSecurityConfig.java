@@ -1,5 +1,7 @@
 package com.SecurityApplication.demo.config;
 
+import com.SecurityApplication.demo.entity.User;
+import com.SecurityApplication.demo.entity.enums.Permissions;
 import com.SecurityApplication.demo.entity.enums.Role;
 import com.SecurityApplication.demo.filters.JwtAuthFilter;
 import com.SecurityApplication.demo.handler.OAuth2SuccessHandler;
@@ -17,7 +19,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +28,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.SecurityApplication.demo.entity.enums.Permissions.*;
 import static com.SecurityApplication.demo.entity.enums.Role.ADMIN;
 import static com.SecurityApplication.demo.entity.enums.Role.CREATOR;
 
@@ -37,14 +40,19 @@ public class WebSecurityConfig{
     private final JwtAuthFilter jwtAuthFilter;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private static final String[] publicRoutes={"/error","/home.html","/auth/**"};
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception
     {
         httpSecurity
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers(publicRoutes).permitAll()
-                        .requestMatchers(HttpMethod.GET,"/posts/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/posts/**").hasAnyRole(ADMIN.name(), CREATOR.name())
+                        //  .requestMatchers(HttpMethod.GET,"/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/posts/**").hasAnyAuthority(POST_CREATE.name())
+                        .requestMatchers(HttpMethod.PUT,"/posts/**").hasAnyAuthority(POST_UPDATE.name())
+                        .requestMatchers(HttpMethod.DELETE,"/posts/**").hasAnyAuthority(POST_DELETE.name())
+                        .requestMatchers(HttpMethod.GET,"/posts/**").hasAnyAuthority(POST_VIEW.name())
+
                         .anyRequest().authenticated())
                         .csrf(csrfConfig -> csrfConfig.disable())
                         .sessionManagement(sessionConfig-> sessionConfig
