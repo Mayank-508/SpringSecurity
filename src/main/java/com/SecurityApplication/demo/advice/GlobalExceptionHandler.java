@@ -8,6 +8,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,6 +33,13 @@ public class GlobalExceptionHandler {
     {
         ApiError apiError=new ApiError(HttpStatus.UNAUTHORIZED, ex.getLocalizedMessage());
         return  new ResponseEntity<>(apiError,HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public  ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex)
+    {
+        ApiError apiError=new ApiError(HttpStatus.FORBIDDEN, ex.getLocalizedMessage());
+        return  new ResponseEntity<>(apiError,HttpStatus.FORBIDDEN);
     }
 
 

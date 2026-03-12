@@ -22,6 +22,9 @@ public class PostEntity    {
    // @NotAudited  // changes to des will not be tracked
     private String description;
 
+    @ManyToOne
+    private User author;
+
     @PrePersist
     void beforeSave(){
 
