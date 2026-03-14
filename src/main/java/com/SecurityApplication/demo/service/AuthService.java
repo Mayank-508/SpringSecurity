@@ -41,4 +41,8 @@ public class AuthService {
         String accessToken= jwtService.generateAccessToken(user);
         return new LoginResponseDTO(userId, accessToken, refreshToken);
     }
+
+    public void logout() {
+
+    }
 }

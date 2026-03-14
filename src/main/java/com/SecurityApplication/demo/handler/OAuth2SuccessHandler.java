@@ -32,6 +32,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
+
+            // This method is triggered after successful OAuth2 login.
+            // At this point, Spring Security has already received the authorization code from Google
+            // and exchanged it with Google's Authorization Server for an access token.
+            // The user is now authenticated and their details are available in the Authentication object.
+
         OAuth2AuthenticationToken token= (OAuth2AuthenticationToken) authentication;
         DefaultOAuth2User oAuth2User=(DefaultOAuth2User) token.getPrincipal();
 

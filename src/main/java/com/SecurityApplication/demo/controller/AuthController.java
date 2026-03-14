@@ -65,6 +65,11 @@ public class AuthController {
         return ResponseEntity.ok(loginResponseDTO);
     }
 
+    @PostMapping("/logout")
+    public void logout()
+    {
+        authService.logout();
+    }
 
 
 
